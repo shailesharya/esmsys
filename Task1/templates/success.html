@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Success Page</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Center button vertically and horizontally */
+        .centered {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col text-center">
+                <h1>Success!</h1>
+                <p>Data Updation successful.</p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col text-center">
+                <button class="btn btn-primary centered" onclick="redirectToHome()">Go to Home</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Function to redirect to the home page
+        function redirectToHome() {
+            window.location.href = "/submit"; // Replace "/home" with the URL of your home page
+        }
+    </script>
+</body>
+</html>

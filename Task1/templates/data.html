@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Location Information</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2>Location Information</h2>
+
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="stateSelect">Select State:</label>
+                <select class="form-control" id="stateSelect" onchange="getStateData(this.value)">
+                    <option value="">Select State</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="col-md-2">
+            <div class="form-group" id="cityDiv" style="display: none;">
+                <label for="citySelect">Select City:</label>
+                <select class="form-control" id="citySelect" onchange="getCityData(this.value)">
+                    <option value="">Select City</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group" id="talukaDiv" style="display: none;">
+                <label for="talukaSelect">Select Taluka:</label>
+                <select class="form-control" id="talukaSelect" onchange="getTalukaData(this.value)">
+                    <option value="">Select Taluka</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group" id="villageDiv" style="display: none;">
+                <label for="villageSelect">Select Village:</label>
+                <select class="form-control" id="villageSelect">
+                    <option value="">Select Village</option>
+                </select>
+            </div>
+        </div>   
+        <div class="col-md-2">
+            <div class="form-group">
+                <button class="btn btn-primary" onclick="addData()">Add Data</button>
+            </div>
+            
+        </div> 
+    </div>
+
+    
+    <h2>Information</h2>
+    <div class="row">
+        <div class="col-md-4" id="cityData">
+            <table class="table table-bordered" id="cityTable">
+                <tbody id="city_Data"></tbody>
+            </table>
+        </div>
+        <div class="col-md-4" id="talukaData">
+            <table class="table table-bordered" id="talukeTable">
+                <tbody id="taluka_Data"></tbody>
+            </table>
+        </div>
+        <div class="col-md-4" id="villageData">
+            <table class="table table-bordered" id="villageTable">
+                <tbody id="village_Data"></tbody>
+            </table>
+        </div>
+    </div>
+    
+</div>
+
+<!-- Bootstrap JS and jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+
+    function clearCity(){
+        const cityData = document.getElementById('city_Data');
+        cityData.innerHTML = "";
+    }
+    function clearTaluka() {
+        const talukaData = document.getElementById('taluka_Data');
+        talukaData.innerHTML = "";
+    }
+
+    function clearVillage(){
+        const villageData = document.getElementById('village_Data');
+        villageData.innerHTML = "";
+    }
+    // Function to fetch data for City based on State selection
+    function getStateData(stateID) {
+
+    if (stateID) {
+        clearCity();
+        clearTaluka();
+        clearVillage();
+        fetch(`/get_cities/${stateID}`)
+            .then(response => response.json())
+            .then(data => {
+                const citySelect = document.getElementById('citySelect');
+                citySelect.innerHTML = '<option value="">Select City</option>';
+                for (const key in data) {
+                    citySelect.innerHTML += `<option value="${key}">${data[key]}</option>`;
+                }
+                document.getElementById('cityDiv').style.display = 'block';
+
+                // Display city data in table format
+                const cityTable = document.getElementById('cityTable');
+                const cityData = document.getElementById('city_Data');
+
+                // cityTable.style.display = 'block'; // Show the city table
+                cityData.innerHTML = ''; 
+                let htmlString = ''; // Initialize an empty string for the table rows
+                for (const key in data) {
+                    htmlString += `
+                        <tr>
+                            <td>${key}</td>
+                            <td>${data[key]}</td>
+                        </tr>
+                        `;
+                }
+                cityData.innerHTML = htmlString;
+            });
+    }
+    
+}
+
+    function editTaluka(talukaID, talukaName){
+        console.log(talukaID,talukaName);
+        window.location.href = `/edit_taluka?talukaID=${talukaID}&talukaName=${talukaName}`;
+    }
+    // Function to fetch data for Taluka based on City selection
+    function getCityData(cityID) {
+        if (cityID) {
+            clearTaluka();
+            clearVillage();
+            fetch(`/get_taluka/${cityID}`)
+                .then(response => response.json())
+                .then(data => {
+                    const talukaSelect = document.getElementById('talukaSelect');
+                    talukaSelect.innerHTML = '<option value="">Select Taluka</option>';
+                    for (const key in data) {
+                        talukaSelect.innerHTML += `<option value="${key}">${data[key]}</option>`;
+                    }
+                    document.getElementById('talukaDiv').style.display = 'block';
+
+                    const talukeTable = document.getElementById('talukeTable');
+                    const talukaData = document.getElementById('taluka_Data');
+
+                    // cityTable.style.display = 'block'; // Show the city table
+                    talukaData.innerHTML = ''; 
+                    let htmlString = ''; // Initialize an empty string for the table rows
+                    for (const key in data) {
+                        htmlString += `
+                            <tr>
+                                <td>${key}</td>
+                                <td>${data[key]}</td>
+                                <td><button type="button" class="btn btn-primary" onclick="editTaluka('${key}','${data[key]}')">Edit</button></td>
+
+                            </tr>
+                            `;
+                    }
+                    talukaData.innerHTML = htmlString;
+
+                });
+        }
+    }
+
+
+    function editVillage(villageID, villageName) {
+        console.log(villageID, villageName);
+        window.location.href = `/edit_village?villageID=${villageID}&villageName=${villageName}`;
+    }
+    // Function to fetch data for Village based on Taluka selection
+    function getTalukaData(talukaID) {
+        if (talukaID) {
+            clearVillage();
+            fetch(`/get_village/${talukaID}`)
+                .then(response => response.json())
+                .then(data => {
+                    const villageSelect = document.getElementById('villageSelect');
+                    villageSelect.innerHTML = '<option value="">Select Village</option>';
+                    for (const key in data) {
+                        villageSelect.innerHTML += `<option value="${key}">${data[key]}</option>`;
+                    }
+                    document.getElementById('villageDiv').style.display = 'block';
+
+                    const villageTable = document.getElementById('villageTable');
+                    const villageData = document.getElementById('village_Data');
+
+                    // cityTable.style.display = 'block'; // Show the city table
+                    villageData.innerHTML = ''; 
+                    let htmlString = ''; // Initialize an empty string for the table rows
+                    for (const key in data) {
+                        htmlString += `
+                            <tr>
+                                <td>${key}</td>
+                                <td>${data[key]}</td>
+                                <td><button type="button" class="btn btn-primary" onclick="editVillage('${key}','${data[key]}')">Edit</button></td>
+                            </tr>
+                            `;
+                    }
+                    villageData.innerHTML = htmlString;
+
+                });
+        }
+    }
+
+    // Function to load states initially
+    fetch('/get_states')
+        .then(response => response.json())
+        .then(data => {
+            const stateSelect = document.getElementById('stateSelect');
+            for (const key in data) {
+                stateSelect.innerHTML += `<option value="${key}">${data[key]}</option>`;
+            }
+        });
+
+    function addData(){
+        window.location.href = '/add_state';    
+    }
+</script>
+</body>
+</html>

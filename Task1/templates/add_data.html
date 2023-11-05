@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Data</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2>Select Data to Add</h2>
+    <div class="form-group">
+        <label for="dataSelect">Select Data Type:</label>
+        <select class="form-control" id="dataSelect" onchange="showAddCityField()">
+            <option value="">-- Select --</option>
+            <option value="state">State</option>
+            <option value="city">City</option>
+            <option value="taluka">Taluka</option>
+            <option value="village">Village</option>
+        </select>
+    </div>
+
+    <div id="addStateField" style="display: none;">
+        <label for="add_state">Add new State</label>
+        <input type="text" name="add_state" id="add_state" placeholder="Enter state name here.." class="form-control">
+    </div>
+
+    <button type="button" class="btn btn-primary mt-3" onclick="addData()">Add</button>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    function showAddCityField() {
+        const selectedOption = document.getElementById('dataSelect').value;
+        if (selectedOption === 'state') {
+            document.getElementById('addStateField').style.display = 'block';
+        } else {
+            document.getElementById('addStateField').style.display = 'none';
+        }
+    }
+
+    function addData() {
+        const selectedOption = document.getElementById('dataSelect').value;
+        if (selectedOption === 'state') {
+            // Handle adding a new state
+            const newState = document.getElementById('add_state').value;
+            console.log('Adding State: ' + newState);
+            // make a post request with newState val to flask backend
+            fetch('/add_state', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newState)
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Handle success
+                    console.log('State added successfully.');
+                    // Redirect or perform other actions after success
+                    window.location.href = "/successUpdate";
+                } else {
+                    // Handle error scenarios
+                    console.error('Failed to add state.');
+                }
+            })
+            .catch(error => {
+                // Handle fetch error
+                console.error('Error:', error);
+            });
+
+
+
+
+        } else if (selectedOption === 'city') {
+            window.location.href = '/add_city'; // Replace with the URL to add a city
+        } else if (selectedOption === 'taluka') {
+            window.location.href = '/add_taluka'; // Replace with the URL to add a taluka
+        } else if (selectedOption === 'village') {
+            window.location.href = '/add_village'; // Replace with the URL to add a village
+        } else {
+            alert('Please select a data type to add.');
+        }
+    }
+</script>
+
+</body>
+</html>
