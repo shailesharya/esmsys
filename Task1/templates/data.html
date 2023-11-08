@@ -79,7 +79,9 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
-
+    let city_ID = "";
+    let taluka_ID = "";
+    let village_ID = "";
     function clearCity(){
         const cityData = document.getElementById('city_Data');
         cityData.innerHTML = "";
@@ -137,6 +139,7 @@
     }
     // Function to fetch data for Taluka based on City selection
     function getCityData(cityID) {
+        city_ID = cityID;
         if (cityID) {
             clearTaluka();
             clearVillage();
@@ -177,8 +180,17 @@
         console.log(villageID, villageName);
         window.location.href = `/edit_village?villageID=${villageID}&villageName=${villageName}`;
     }
+
+    function changeTaluka(villageID, villageName, city_ID){
+        console.log("changeTaluka", villageID, villageName, city_ID);
+        window.location.href = `/change_taluka?villageID=${villageID}&villageName=${villageName}&cityID=${city_ID}`;
+    }
+
     // Function to fetch data for Village based on Taluka selection
     function getTalukaData(talukaID) {
+        taluka_ID  = talukaID;
+        console.log(`Citty is ${city_ID}`);
+        console.log(`talika id ${taluka_ID}`);
         if (talukaID) {
             clearVillage();
             fetch(`/get_village/${talukaID}`)
@@ -203,6 +215,7 @@
                                 <td>${key}</td>
                                 <td>${data[key]}</td>
                                 <td><button type="button" class="btn btn-primary" onclick="editVillage('${key}','${data[key]}')">Edit</button></td>
+                                <td><button type="button" class="btn btn-warning" onclick="changeTaluka('${key}','${data[key]}','${city_ID}')">Change</button></td>
                             </tr>
                             `;
                     }

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Location Information</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2>Add Village to Taluka</h2>
+
+    <div class="form-group">
+    
+        <div class="row">
+            <div class="col-md-2">
+                <label for="cityInput">City ID</label>
+                <input type="text" id="cityInput" class="form-control"  value="{{city_id}}" placeholder="{{city_id}}" disabled>
+            </div>
+            <div class="col">
+                <label for="cityInput">City Name</label>
+                <input type="text" id="cityInput1" class="form-control"  value="{{city_name}}" placeholder="{{city_name}}" disabled>
+            </div>
+            
+        </div>
+        
+
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-2">
+                <label for="villageInput">Village ID</label>
+                <input type="text" id="villageInput" class="form-control"  value="{{village_id}}" placeholder="{{village_id}}" disabled>
+        
+            </div>
+            <div class="col">
+                <label for="villageInput">Village Name</label>
+                <input type="text" id="villageInput1" class="form-control"  value="{{village_name}}" placeholder="{{village_name}}" disabled>
+        
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="talukaSelect">Select Taluka:</label>
+        <select class="form-control" id="talukaSelect">
+            <option value="" selected disabled>Select Taluka</option>
+            <!-- Talukas will be populated here dynamically -->
+        </select>
+    </div>
+    <!-- add bootstrap button for change with onchange method-->
+    <button type="submit" class="btn btn-primary" onclick="changeTaluka()">Submit</button>
+</div>
+
+<!-- Bootstrap JS and jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    // Mock data for talukas (to be replaced with actual data fetched via AJAX)
+    // Function to populate the taluka select dropdown
+    function populateTalukas() {
+        const talukaSelect = document.getElementById('talukaSelect');
+        // talukas.forEach(taluka => {
+        //     console.log(taluka);
+        //     // talukaSelect.innerHTML += `<option value="${taluka.id}">${taluka.name}</option>`;
+        // });
+
+        const cityID = document.getElementById('cityInput').value;
+        console.log("CituID: ", cityID);
+        fetch(`/get_taluka/${cityID}`)
+                .then(response => response.json())
+                .then(data => {
+                    for (const key in data) {
+                        console.log(data);
+                        talukaSelect.innerHTML += `<option value="${key}">${data[key]}</option>`;
+                    }
+                document.getElementById('talukaDiv').style.display = 'block';
+            })
+    }
+    // Call the function to populate talukas when the page loads
+    document.addEventListener('DOMContentLoaded', populateTalukas);
+
+    function changeTaluka(){
+        const village_name = document.getElementById('villageInput1').value;
+        const selectedTaluka = document.getElementById("talukaSelect").value;
+        const villgeID = document.getElementById('villageInput').value;
+        const data = {
+            selectedTaluka: selectedTaluka,
+            villgeID: villgeID,
+            villageName: village_name
+        };
+
+        
+        // fetch function to call api get_taluka with post method
+        fetch('/change_taluka', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.ok) {
+                // Handle success, such as displaying a message or performing other actions
+                console.log('Village updated successfully.');
+                // redirect to success page
+                window.location.href = "/successUpdate";
+            } else {
+                // Handle error scenarios
+                console.error('Failed to update village.');
+            }
+        })
+    }
+    
+
+</script>
+</body>
+</html>

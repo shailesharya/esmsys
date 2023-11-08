@@ -244,6 +244,34 @@ def add_state():
     elif request.method == 'GET':
         return render_template('add_data.html')
 
+@app.route("/change_taluka", methods=['GET', 'POST'])
+def change_taluka():
+    if request.method == 'GET':
+        village_id = request.args.get('villageID')
+        village_name = request.args.get('villageName')
+        city_id = request.args.get('cityID')
+        print(village_id, village_name, city_id)
+        # write a query to get city name based on city_id
+        cursor = conn.cursor()
+        selectCitySQL = f'SELECT * FROM my_City WHERE cityID={city_id}'
+        cursor.execute(selectCitySQL)
+        resultSet = cursor.fetchall()
+        city_name = list(resultSet)[0][1]
+        print(list(resultSet)[0][1])
+        return render_template('change_village_taluka.html', village_id=village_id, village_name=village_name, city_id=city_id, city_name=city_name)
+    elif request.method == "POST":
+        data = json.loads(request.data)
+        print(data)
+        selectedTaluka = data["selectedTaluka"]
+        village_id = data["villgeID"]
+        village_name = data["villageName"]
+        # write a query to add village id and village name and selectedTaluke to my_Village table
+        cursor = conn.cursor()
+        insertSQL = f"UPDATE my_Village SET TalukaID='{selectedTaluka}' WHERE VillageID={village_id}"
+        cursor.execute(insertSQL)
+        conn.commit()
+        return render_template('success.html')
+
 @app.route("/successUpdate")
 def successUpdate():
     return render_template('success.html')
